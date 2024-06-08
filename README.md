@@ -47,8 +47,6 @@ Imagine interacting with apps and blockchains as naturally as having a conversat
 ## AMM Scraper
 The project includes a data scraper located in the `amm_scraper` directory. This scraper fetches data from `https://xrpscan.com/amms` and processes it into JSON format. For detailed instructions on using the scraper, refer to the [AMM Scraper README](./amm_scraper/README.md).
 
-## License
-This project is licensed under the MIT License. See the LICENSE file for more details.
 
 <!-- Interacting with apps/blockchains should be conversational.
 It should flow naturally, and your money/assets should always aim
