@@ -1,16 +1,17 @@
 <script>
 	import { source } from 'sveltekit-sse';
 	import sdk from '@crossmarkio/sdk';
-    
+
 	let walletType = sdk?.session?.address ? 'crossmark' : null;
 	let address = sdk?.session?.address;
 	let messages = [];
 
 	let userMessage = '';
+	let assistantLoader = true;
 	let connection = source('/api', {
 		options: {
 			headers: {
-				Message: "Hello, can you help me"
+				Message: 'Greet me and ask me what I want to do'
 			}
 		}
 	});
@@ -18,6 +19,7 @@
 	let transformed = channel.transform(function run(data) {
 		const messageData = data.split('⸞');
 		if (messageData.length === 4) {
+			assistantLoader = false;
 			addMessage({ type: 'assistant', value: messageData[2] });
 			connection.close();
 		}
@@ -38,21 +40,58 @@
 		address = null;
 	}
 
-    function sendPayment(address, amount) {
-        crossMarksendPayment(address, amount)
-    }
+	function sendPayment(address, amount) {
+		crossMarkSendPayment(address, amount);
+	}
 
-    async function crossMarksendPayment(address, amount) {
-        await sdk.methods.signAndSubmitAndWait({
-            TransactionType: 'Payment',
-            Account: address,
-            Destination: address,
-            Amount: `${amount}000000` 
-        });
-    }
+	function sendBridgePayment(address, amount) {
+		crossMarkSendBridgePayment(address, amount);
+	}
+
+	async function crossMarkSendPayment(destinationAddress, amount) {
+		await sdk.methods.signAndSubmitAndWait({
+			TransactionType: 'Payment',
+			Account: address,
+			Destination: destinationAddress,
+			Amount: `${amount}000000`
+		});
+	}
+
+	async function crossMarkSendBridgePayment(destinationAddress, amount) {
+		const destAddress = destinationAddress.startsWith('0x')
+			? destinationAddress.slice(2)
+			: destinationAddress;
+		await sdk.methods.signAndSubmitAndWait({
+			TransactionType: 'Payment',
+			Account: address,
+			Destination: 'rfEf91bLxrTVC76vw1W3Ur8Jk4Lwujskmb', // Axelar's XRPL multisig account
+			Amount: `${amount}000000`,
+			Memos: [
+				{
+					Memo: {
+						MemoData: destAddress, // your ETH recipient address, without the 0x prefix
+						MemoType: '64657374696E6174696F6E5F61646472657373' // hex("destination_address")
+					}
+				},
+				{
+					Memo: {
+						MemoData: '657468657265756D', // hex("ethereum")
+						MemoType: '64657374696E6174696F6E5F636861696E' // hex("destination_chain")
+					}
+				},
+				{
+					Memo: {
+						MemoData: '0000000000000000000000000000000000000000000000000000000000000000', // bytes32(0) indicates pure token transfer, without GMP
+						MemoType: '7061796C6F61645F68617368' // hex("payload_hash")
+					}
+				}
+			]
+		});
+	}
 
 	async function addMessage(message) {
 		if (message.type === 'user') {
+			assistantLoader = true;
 			connection = source('/api', {
 				options: {
 					headers: {
@@ -64,16 +103,23 @@
 			transformed = channel.transform(function run(data) {
 				const messageData = data.split('⸞');
 				if (messageData.length === 4) {
-                    switch (messageData[0]) {
-                        case 'SEND_MONEY':
-                            const input = JSON.parse(messageData[1]);
-                            sendPayment(input.address, input.amount)
-                            break;
+					const action = messageData[0].replace(/[^a-zA-Z_]/g, '');
+					switch (action) {
+						case 'SEND_MONEY':
+							const send_input = JSON.parse(messageData[1]);
+							sendPayment(send_input.address, send_input.amount);
+							break;
 
-                        default:
-                            console.error("unmatched")
-                            break;
-                    }
+						case 'BRIDGE':
+							const bridge_input = JSON.parse(messageData[1]);
+							sendBridgePayment(bridge_input.address, bridge_input.amount);
+							break;
+
+						default:
+							console.error('unmatched');
+							break;
+					}
+					assistantLoader = false;
 					addMessage({ type: 'assistant', value: messageData[2] });
 					connection.close();
 				}
@@ -209,6 +255,29 @@
 				</div>
 			{/if}
 		{/each}
+		{#if assistantLoader}
+			<div class="chat-message">
+				<div class="flex items-end">
+					<div class="flex flex-col space-y-2 text-xs max-w-xs mx-2 order-2 items-start">
+						<div>
+							<span
+								class="px-4 py-2 rounded-lg inline-block rounded-bl-none bg-gray-300 text-gray-600 relative"
+							>
+								Typing...
+								<span
+									class="animate-ping absolute top-0 right-0 inline-flex w-2 h-2 rounded-full bg-orange-500 opacity-75"
+								></span>
+							</span>
+						</div>
+					</div>
+					<img
+						src="https://images.unsplash.com/photo-1528797890300-0787fd964724?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=3&amp;w=144&amp;h=144"
+						alt=""
+						class="w-10 sm:w-16 h-10 sm:h-16 rounded-full"
+					/>
+				</div>
+			</div>
+		{/if}
 	</div>
 	<div class="border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
 		<div class="relative flex">

@@ -17,14 +17,17 @@ export async function POST({ request }) {
               "ACTION⸞INPUT⸞MESSAGE⸞END"
               
               The ACTIONS are: 
-              ["SEND_MONEY", "BALANCE", "CONVERSATION"]
+              ["SEND_MONEY", "BALANCE", "BRIDGE", "CONVERSATION"]
 
               The INPUT depends on the money the user wants to transfer. 
 
               For action BALANCE you will return an empty JSON
               For action SEND_MONEY you will return valid JSON with the amount, address
+              For action BRIDGE you will return valid JSON with the amount, address
 
               Message is always friendly and informative.
+
+              You always end with '⸞END'
             `
 		});
 
