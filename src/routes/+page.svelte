@@ -5,7 +5,7 @@
 	let walletType = sdk?.session?.address ? 'crossmark' : null;
 	let address = sdk?.session?.address;
 	let messages = [];
-
+	let recordMode = false;
 	let userMessage = '';
 	let assistantLoader = true;
 	let connection = source('/api', {
@@ -128,6 +128,37 @@
 			});
 		}
 		messages = [...messages, message];
+	}
+
+	function startRecording() {
+		if (!('webkitSpeechRecognition' in window)) {
+			alert('Your browser does not support speech recognition. Please use Google Chrome.');
+		} else {
+			const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+			const recognition = new SpeechRecognition();
+			recognition.continuous = false; // Stop automatically after one recognition
+			recognition.interimResults = false; // No interim results
+			recognition.lang = 'en-US'; // Language
+			recognition.start();
+
+			recognition.onstart = function () {
+				recordMode = true;
+			};
+
+			recognition.onend = function () {
+				recordMode = false;
+			};
+
+			recognition.onresult = function (event) {
+				console.log('works');
+				const transcript = event.results[0][0].transcript;
+				userMessage = transcript;
+			};
+
+			recognition.onerror = function (event) {
+				console.error(event);
+			};
+		}
 	}
 </script>
 
@@ -283,6 +314,7 @@
 		<div class="relative flex">
 			<span class="absolute inset-y-0 flex items-center">
 				<button
+					on:click={startRecording}
 					type="button"
 					class="inline-flex items-center justify-center rounded-full h-12 w-12 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none"
 				>
@@ -291,7 +323,7 @@
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
-						class="h-6 w-6 text-gray-600"
+						class={`h-6 w-6 ${recordMode ? 'text-red-600' : 'text-gray-600'}`}
 					>
 						<path
 							stroke-linecap="round"

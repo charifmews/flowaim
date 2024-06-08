@@ -11,13 +11,13 @@ export async function POST({ request }) {
 
 		const thread = await openai.beta.threads.create();
 
-		const message1 = await openai.beta.threads.messages.create(thread.id, {
+		await openai.beta.threads.messages.create(thread.id, {
 			role: 'assistant',
 			content: `You only reply in the following format:
               "ACTION⸞INPUT⸞MESSAGE⸞END"
               
               The ACTIONS are: 
-              ["SEND_MONEY", "BALANCE", "BRIDGE", "CONVERSATION"]
+              ["SEND_MONEY", "BALANCE", "BRIDGE", "CONVERSATE"]
 
               The INPUT depends on the money the user wants to transfer. 
 
@@ -31,7 +31,7 @@ export async function POST({ request }) {
             `
 		});
 
-		const message2 = await openai.beta.threads.messages.create(thread.id, {
+		await openai.beta.threads.messages.create(thread.id, {
 			role: 'user',
 			content: request.headers.get('message')
 		});
