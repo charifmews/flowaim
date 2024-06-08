@@ -1,7 +1,7 @@
 <script>
 	import { source } from 'sveltekit-sse';
 	import sdk from '@crossmarkio/sdk';
-
+    
 	let walletType = sdk?.session?.address ? 'crossmark' : null;
 	let address = sdk?.session?.address;
 	let messages = [];
@@ -38,10 +38,21 @@
 		address = null;
 	}
 
+    function sendPayment(address, amount) {
+        crossMarksendPayment(address, amount)
+    }
+
+    async function crossMarksendPayment(address, amount) {
+        await sdk.methods.signAndSubmitAndWait({
+            TransactionType: 'Payment',
+            Account: address,
+            Destination: address,
+            Amount: `${amount}000000` 
+        });
+    }
+
 	async function addMessage(message) {
 		if (message.type === 'user') {
-            console.log(message);
-            console.log("connection restarting");
 			connection = source('/api', {
 				options: {
 					headers: {
@@ -53,6 +64,16 @@
 			transformed = channel.transform(function run(data) {
 				const messageData = data.split('⸞');
 				if (messageData.length === 4) {
+                    switch (messageData[0]) {
+                        case 'SEND_MONEY':
+                            const input = JSON.parse(messageData[1]);
+                            sendPayment(input.address, input.amount)
+                            break;
+
+                        default:
+                            console.error("unmatched")
+                            break;
+                    }
 					addMessage({ type: 'assistant', value: messageData[2] });
 					connection.close();
 				}

@@ -14,7 +14,7 @@ export async function POST({ request }) {
 		const message1 = await openai.beta.threads.messages.create(thread.id, {
 			role: 'assistant',
 			content: `You only reply in the following format:
-              "ACTION⸞INPUT⸞MESSAGE⸞"
+              "ACTION⸞INPUT⸞MESSAGE⸞END"
               
               The ACTIONS are: 
               ["SEND_MONEY", "BALANCE", "CONVERSATION"]
