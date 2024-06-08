@@ -4,7 +4,7 @@
 This project is a Svelte application that leverages the OpenAI API to create an assistant capable of interpreting user prompts and generating commands for Crossmarks.io. The assistant processes user requests and returns structured JSON responses with specific actions and inputs.
 
 ### Introduction
-Interacting with apps and blockchains should be conversational. It should flow naturally, and your money or assets should always aim to earn the most interest, dividends, or capital gains, depending on your personal risk profile.
+Imagine interacting with apps and blockchains as naturally as having a conversation. Let your assets work smarter, effortlessly maximizing returns—whether it's interest, dividends, or capital gains—all perfectly aligned with your personal risk profile.
 
 ## Prerequisites
 - Node.js
