@@ -1,7 +1,16 @@
 # Flowaim
 
+FlowAim is your personal XRP AI guide. We help crypto beginners onboard, advice and create transactions. No more struggle, just the fastest flow. Let me show you how we achieve that
+
 ## Overview
-This project is a Svelte application that leverages the OpenAI API to create an assistant capable of interpreting user prompts and generating commands for Crossmarks.io. The assistant processes user requests and returns structured JSON responses with specific actions and inputs.
+This project is a Svelte application that leverages the OpenAI API to create an assistant capable of interpreting user prompts and generating commands for the Crossmarks wallet. We have a the AIM framework which stands for 
+
+* Action (Which function we need to initiate)
+* Input (JSON)
+* Message (Which we show in the UI)
+
+This prevents using OpenAI function calling which needs to calls to OpenAI and is not the best suited for chat applications. For Web3 the AIM flow is especially suitable because of the heavy
+front-end logic.
 
 ### Introduction
 Imagine interacting with apps and blockchains as naturally as having a conversation. Let your assets work smarter, effortlessly maximizing returns—whether it's interest, dividends, or capital gains—all perfectly aligned with your personal risk profile.
@@ -42,7 +51,9 @@ Imagine interacting with apps and blockchains as naturally as having a conversat
     npm run dev
     ```
 
-2. Access the application in your browser at `http://localhost:3000`.
+2. Access the application in your browser at `http://localhost:5173/`.
+
+## Example 
 
 ## AMM Scraper
 The project includes a data scraper located in the `amm_scraper` directory. This scraper fetches data from `https://xrpscan.com/amms` and processes it into JSON format. For detailed instructions on using the scraper, refer to the [AMM Scraper README](./amm_scraper/README.md).
