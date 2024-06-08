@@ -1,9 +1,11 @@
 # clean_scrape.py
 
 ## Overview
+
 `clean_scrape.py` is a Python script designed to scrape data from a web page using Selenium and BeautifulSoup, process the data, and save it in a JSON format. This script is specifically tailored to scrape Automated Market Maker (AMM) pool data from `https://xrpscan.com/amms`.
 
 ## Prerequisites
+
 Before running the script, ensure that the following software and libraries are installed on your system:
 
 - Python 3.x
@@ -13,16 +15,18 @@ Before running the script, ensure that the following software and libraries are 
 ## Installation
 
 1. Install the required Python libraries from the root folder using `requirements.txt`:
-    ```bash
-    pip install -r requirements.txt
-    ```
+
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 2. Download and install ChromeDriver:
-    - Ensure that ChromeDriver is in your system's PATH, or place it in the same directory as `clean_scrape.py`.
+   - Ensure that ChromeDriver is in your system's PATH, or place it in the same directory as `clean_scrape.py`.
 
 ## Requirements
 
 The `requirements.txt` file should include the following libraries:
+
 ```text
 pandas
 beautifulsoup4
@@ -36,9 +40,9 @@ selenium
 2. Navigate to the directory containing `clean_scrape.py`.
 
 3. Run the script:
-    ```bash
-    python clean_scrape.py
-    ```
+   ```bash
+   python clean_scrape.py
+   ```
 
 ## Script Details
 
@@ -63,6 +67,7 @@ selenium
 ## Example Output
 
 The output JSON file will have the following structure:
+
 ```json
 [
     {
@@ -77,9 +82,9 @@ The output JSON file will have the following structure:
     ...
 ]
 ```
+
 ## Notes
 
 - The script includes sleep periods to ensure that dynamic content loads completely.
 - Adjust the sleep time if the page loading time varies.
 - Ensure that the ChromeDriver version matches your installed Chrome browser version.
-
