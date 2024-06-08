@@ -5,7 +5,7 @@ import { produce } from 'sveltekit-sse';
 const openai = new OpenAI({ apiKey: PRIVATE_OPENAI_API_KEY });
 
 /** @type {import('./$types').RequestHandler} */
-export function POST() {
+export async function POST({ request }) {
 	return produce(async function start({ emit }) {
 		const assistant = await openai.beta.assistants.retrieve('asst_AbauCA98lAw8e8moeWkjjj0m');
 
@@ -14,19 +14,23 @@ export function POST() {
 		const message1 = await openai.beta.threads.messages.create(thread.id, {
 			role: 'assistant',
 			content: `You only reply in the following format:
-              "ACTION⸞INPUT⸞MESSAGE"
+              "ACTION⸞INPUT⸞MESSAGE⸞"
               
               The ACTIONS are: 
-              ["SEND_MONEY", "BALANCE"]
-  
+              ["SEND_MONEY", "BALANCE", "CONVERSATION"]
+
               The INPUT depends on the money the user wants to transfer. 
-              You will return valid JSON with the amount, address
+
+              For action BALANCE you will return an empty JSON
+              For action SEND_MONEY you will return valid JSON with the amount, address
+
+              Message is always friendly and informative.
             `
 		});
 
 		const message2 = await openai.beta.threads.messages.create(thread.id, {
 			role: 'user',
-			content: 'I want to transfer money to 0x1234567890abcdef and the amount is 1000'
+			content: request.headers.get('message')
 		});
 
 		const run = openai.beta.threads.runs

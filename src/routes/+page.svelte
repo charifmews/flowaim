@@ -1,20 +1,32 @@
 <script>
 	import { source } from 'sveltekit-sse';
-	// const value = source('/api').select('message');
 	import sdk from '@crossmarkio/sdk';
 
 	let walletType = sdk?.session?.address ? 'crossmark' : null;
 	let address = sdk?.session?.address;
-    let messages = [
-        {
-            type: 'assistant',
-            value: 'Hi, today I would recommend you the following options. XRP/BITCOIN'
-        },
-        {
-            type: 'user',
-            value: 'Can you do a 1000 euro deposit'
-        }
-    ];
+	let messages = [];
+
+	let userMessage = '';
+	let connection = source('/api', {
+		options: {
+			headers: {
+				Message: "Hello, can you help me"
+			}
+		}
+	});
+	let channel = connection.select('message');
+	let transformed = channel.transform(function run(data) {
+		const messageData = data.split('⸞');
+		if (messageData.length === 4) {
+			addMessage({ type: 'assistant', value: messageData[2] });
+			connection.close();
+		}
+
+		return `transformed: ${data}`;
+	});
+
+	$: console.log({ $transformed });
+
 	async function signIn() {
 		let { request, response, createdAt, resolvedAt } = await sdk.methods.signInAndWait();
 		walletType = 'crossmark';
@@ -26,12 +38,30 @@
 		address = null;
 	}
 
-    function addMessage(message) {
-        messages = [
-            ...messages,
-            message
-        ];
-    }
+	async function addMessage(message) {
+		if (message.type === 'user') {
+            console.log(message);
+            console.log("connection restarting");
+			connection = source('/api', {
+				options: {
+					headers: {
+						Message: userMessage
+					}
+				}
+			});
+			channel = connection.select('message');
+			transformed = channel.transform(function run(data) {
+				const messageData = data.split('⸞');
+				if (messageData.length === 4) {
+					addMessage({ type: 'assistant', value: messageData[2] });
+					connection.close();
+				}
+
+				return `transformed: ${data}`;
+			});
+		}
+		messages = [...messages, message];
+	}
 </script>
 
 <div class="flex-1 p:2 sm:p-6 justify-between flex flex-col h-screen">
@@ -100,7 +130,7 @@
 					on:click={signIn}
 					class="px-2 inline-flex items-center justify-center rounded-lg border h-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none"
 				>
-                    <img class="h-6 mr-2" src="crossmark.webp" alt="" />
+					<img class="h-6 mr-2" src="crossmark.webp" alt="" />
 					Login
 				</button>
 			{:else}
@@ -185,14 +215,21 @@
 			<input
 				type="text"
 				placeholder="Write your message!"
+				bind:value={userMessage}
+				on:keydown={(e) => {
+					if (e.key === 'Enter') {
+						addMessage({ type: 'user', value: userMessage });
+						userMessage = '';
+					}
+				}}
 				class="w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-12 bg-gray-200 rounded-md py-3"
 			/>
 			<div class="absolute right-0 items-center inset-y-0 hidden sm:flex">
 				<button
-                    on:click={() => {
-
-                        addMessage({ type: 'user', value: 'Hello test' });
-                    }}
+					on:click={() => {
+						addMessage({ type: 'user', value: userMessage });
+						userMessage = '';
+					}}
 					type="button"
 					class="inline-flex items-center justify-center rounded-lg px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-500 hover:bg-blue-400 focus:outline-none"
 				>
