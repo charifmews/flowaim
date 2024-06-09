@@ -53,7 +53,14 @@ Imagine interacting with apps and blockchains as naturally as having a conversat
 
 2. Access the application in your browser at `http://localhost:5173/`.
 
-## Example 
+## Transactions that were AI triggered
+
+You can try yourself on https://flowaim.com on Ripple Testnet! 
+
+Or check these transactions: 
+
+send 1 XRP: [EBE060A6E23C0B6F406A754409FE4688F37BA2DDFD7FB57D8D02302EB7032475](https://testnet.xrpl.org/transactions/EBE060A6E23C0B6F406A754409FE4688F37BA2DDFD7FB57D8D02302EB7032475/simple)
+send 1 XRP to Ethereum Sepolia with Axelar: [C91A53730284F069B01EF036331008E7D39D3254AED468785EBE47D02D4FA702](https://testnet.xrpl.org/transactions/C91A53730284F069B01EF036331008E7D39D3254AED468785EBE47D02D4FA702/simple)
 
 ## AMM Scraper
 The project includes a data scraper located in the `amm_scraper` directory. This scraper fetches data from `https://xrpscan.com/amms` and processes it into JSON format. For detailed instructions on using the scraper, refer to the [AMM Scraper README](./amm_scraper/README.md).
