@@ -1,6 +1,7 @@
 <script>
 	import { source } from 'sveltekit-sse';
 	import sdk from '@crossmarkio/sdk';
+    import { MetaTags } from 'svelte-meta-tags';
 
 	let walletType = sdk?.session?.address ? 'crossmark' : null;
 	let address = sdk?.session?.address;
@@ -161,6 +162,25 @@
 		}
 	}
 </script>
+
+<MetaTags
+  title="Your personal XRP AI guide"
+  titleTemplate="%s | FlowAim"
+  description="We help crypto beginners onboard XRP, advice and create transactions. No more struggle, just the fastest flow."
+  canonical="https://flowaim.com/"
+  openGraph={{
+    url: 'https://flowaim.com/',
+    title: 'Open Graph Title',
+    description: 'Open Graph Description',
+    images: [
+      {
+        url: 'https://flowaim.com/social-media-whippet.webp',
+        alt: 'Your personal XRP AI guide | FlowAim'
+      }
+    ],
+    siteName: 'FlowAim'
+  }}
+/>
 
 <div class="flex-1 p:2 sm:p-6 justify-between flex flex-col h-screen">
 	<div class="flex sm:items-center justify-between py-3 border-b-2 border-gray-200">
