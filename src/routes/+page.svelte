@@ -190,14 +190,17 @@
 		if (account) {
 			selectedAccount = account;
 			const message = `Asset pair: ${account["Asset Pair"]} with AMM account: ${account["AMM Account"]}`;
-			userMessage = message;
 			
-			// Focus the input field
+			// Insert the message at the cursor position
+			const inputField = document.querySelector('#message-input');
+			const cursorPosition = inputField.selectionStart;
+			
+			userMessage = userMessage.slice(0, cursorPosition) + message + userMessage.slice(cursorPosition);
+
+			// Set the new cursor position after the inserted message
 			setTimeout(() => {
-				const inputField = document.querySelector('#message-input');
-				if (inputField) {
-					inputField.focus();
-				}
+				inputField.setSelectionRange(cursorPosition + message.length, cursorPosition + message.length);
+				inputField.focus();
 			}, 0);
 
 			recentAccounts.update((recent) => {
@@ -208,6 +211,7 @@
 			console.error('Account data is undefined');
 		}
 	}
+
 
 
 
@@ -248,7 +252,7 @@
     <!-- Sidebar -->
     <div class="sidebar w-64 bg-gray-100 p-4 border-r-2 border-gray-200 flex-shrink-0">
 		<div class="bg-gray-800 px-2 py-1 flex items-center justify-center">
-			<h2 class="text-xl font-bold text-white" style="font-family: 'Nunito', sans-serif;">Asset pairs</h2>
+			<h2 class="text-xl font-bold text-white" style="font-family: 'Nunito', sans-serif;">Accounts</h2>
 		</div>
 		
         <div class="amm-accounts h-1/2 overflow-y-auto mb-4">
